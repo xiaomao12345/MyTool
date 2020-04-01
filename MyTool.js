@@ -39,50 +39,7 @@
 				"height": document.body.clientHeight
 			}
 		},
-		waterFull: function(parent, child) {
-			// 1. 父盒子居中
-			// 1.1 获取所有的盒子
-			var allBox = $(parent).getElementsByClassName(child);
-			// 1.2 获取子盒子的宽度
-			var boxWidth = allBox[0].offsetWidth;
-			// 1.3 获取屏幕的宽度
-			var screenW = document.documentElement.clientWidth;
-			// 1.4 求出列数
-			var cols = parseInt(screenW / boxWidth);
-			// 1.5 父盒子居中
-			$(parent).style.width = cols * boxWidth + 'px';
-			$(parent).style.margin = "0 auto";
-
-			// 2. 子盒子的定位
-			// 2.1 定义高度数组
-			var heightArr = [],
-				boxHeight = 0,
-				minBoxHeight = 0,
-				minBoxIndex = 0;
-			// 2.2 遍历子盒子
-			for(var i = 0; i < allBox.length; i++) {
-				// 2.2.1 求出每一个子盒子的高度
-				boxHeight = allBox[i].offsetHeight;
-				// 2.2.2 取出第一行盒子的高度放入高度数组
-				if(i < cols) { // 第一行
-					heightArr.push(boxHeight);
-					allBox[i].style = '';
-				} else { // 剩余行
-					// 1. 取出最矮的盒子高度
-					minBoxHeight = _.min(heightArr);
-					// 2. 求出最矮盒子对应的索引
-					minBoxIndex = getMinBoxIndex(heightArr, minBoxHeight);
-					// 3. 子盒子定位
-					allBox[i].style.position = "absolute";
-					allBox[i].style.left = minBoxIndex * boxWidth + 'px';
-					allBox[i].style.top = minBoxHeight + 'px';
-					// 4. 更新数组中的高度
-					heightArr[minBoxIndex] += boxHeight;
-				}
-			}
-
-			// console.log(heightArr, minBoxHeight, minBoxIndex);
-		},
+		
 		/*
 		 * 缓动动画函数
 		 * @param {Object} obj
@@ -104,8 +61,11 @@
 					if (json.hasOwnProperty(key)) {
 						// 1.3 获取初始值
 						if("opacity" === key) {
-							begin = Math.round(parseFloat(myTool.getCSSAttrValue(obj, key)) * 100) || 100;
-							target = parseInt(json[key] * 100);
+							/*begin = Math.round(parseFloat(myTool.getCSSAttrValue(obj, key)) * 100) || 100;
+							target = parseInt(json[key] * 100);*/
+							
+							begin = parseInt( parseFloat(myTool.getCSSAttrValue(obj, key)) * 100);
+                            target = parseInt(parseFloat(json[key]) * 100);
 						} else if('scrollTop' === key) {
 							begin = Math.ceil(Number(obj.scrollTop));
 							target = parseInt(json[key]);
@@ -126,6 +86,7 @@
 							// w3c的浏览器
 							obj.style.opacity = (begin + speed) / 100;
 							
+                            obj.style.filter = 'alpha(opacity=' + (begin + target)+')'; // 针对IE
 						} else if('scrollTop' === key){
 							
 							obj.scrollTop = begin + speed;
